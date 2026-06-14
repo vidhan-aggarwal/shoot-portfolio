@@ -1,0 +1,1170 @@
+/* ==========================================================================
+   AURA VANCE - EDITORIAL FASHION STYLIST PORTFOLIO DESIGN SYSTEM
+   ========================================================================== */
+
+/* Load Lemon Milk Custom Font Face */
+@font-face {
+  font-family: 'LEMON MILK';
+  src: url('https://cdn.jsdelivr.net/gh/vidhan-aggarwal/fonts/LemonMilk.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/vidhan-aggarwal/fonts/LemonMilk.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Global Reset & Base styling */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+:root {
+  --font-display: 'LEMON MILK', 'League Spartan', sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-monospace: 'Courier New', Courier, monospace;
+  
+  /* HSL & HEX Pantone 12-907 Pink Marshmallow palette */
+  --clr-marshmallow: #F5E3E7;
+  --clr-bg: var(--clr-marshmallow);
+  --clr-text-primary: #0A0A0A;
+  --clr-text-secondary: rgba(10, 10, 10, 0.7);
+  --clr-text-muted: rgba(10, 10, 10, 0.45);
+  --clr-border: rgba(10, 10, 10, 0.08);
+  --clr-glass: rgba(255, 255, 255, 0.65);
+  --clr-glass-hover: rgba(255, 255, 255, 0.85);
+  
+  /* Shifting dynamic variables (updated by CSS variables inline or JS) */
+  --shoot-theme: #FFFFFF;
+  --shoot-bg: #0A0A0A;
+  --shoot-text-primary-dynamic: #FFFFFF;
+  --shoot-text-secondary-dynamic: rgba(255, 255, 255, 0.7);
+  --shoot-text-muted-dynamic: rgba(255, 255, 255, 0.45);
+  --shoot-border-dynamic: rgba(255, 255, 255, 0.08);
+  --shoot-card-caption-gradient-start: #0A0A0A;
+  --shoot-card-caption-gradient-mid: rgba(10, 10, 10, 0.8);
+  --shoot-card-caption-border: rgba(255, 255, 255, 0.05);
+  --shoot-theme-rgb: 255, 255, 255;
+  
+  --spacing-section: 12vh;
+  --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+html, body {
+  background-color: var(--clr-bg);
+  color: var(--clr-text-primary);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 1s var(--transition-slow), color 0.5s var(--transition-smooth);
+}
+
+body.is-hero-view {
+  background-color: #0A0A0A;
+}
+
+/* Hide default cursor on desktops */
+@media (pointer: fine) {
+  body, a, button, input, textarea {
+    cursor: none !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--clr-marshmallow);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(10, 10, 10, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 10, 10, 0.3);
+}
+
+/* ==========================================================================
+   PREMIUM ATMOSPHERIC LAYERS
+   ========================================================================== */
+
+/* Ambient Glow that follows cursor in background */
+.ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--shoot-theme-rgb, 10, 10, 10), 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  will-change: transform, background;
+  mix-blend-mode: multiply;
+  filter: blur(80px);
+  transition: background 0.8s var(--transition-smooth);
+}
+
+/* Futuristic Tech Grid Overlay */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: 
+    linear-gradient(to right, rgba(10, 10, 10, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   CUSTOM LIQUID CURSOR
+   ========================================================================== */
+
+.custom-cursor-dot {
+  display: none;
+}
+
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(10, 10, 10, 0.9);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 0 8px rgba(10, 10, 10, 0.15);
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 1;
+  transition: width 0.3s var(--transition-smooth), height 0.3s var(--transition-smooth),
+              background-color 0.3s var(--transition-smooth), border-color 0.3s var(--transition-smooth);
+  will-change: transform;
+}
+
+.cursor-text {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--clr-marshmallow);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s var(--transition-smooth), transform 0.3s var(--transition-smooth);
+}
+
+body.hovering-card .custom-cursor-ring {
+  width: 24px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(10, 10, 10, 0.85);
+}
+
+body.hovering-button .custom-cursor-ring {
+  width: 32px;
+  height: 32px;
+  background-color: rgba(255, 255, 255, 0.45);
+  border-color: rgba(10, 10, 10, 0.95);
+}
+
+/* ==========================================================================
+   NAVIGATION & HEADER
+   ========================================================================== */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6vh 0;
+  z-index: 100;
+  gap: 10vh;
+  background-color: #000000;
+  opacity: 0; /* Fades in via JS */
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  text-decoration: none;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s var(--transition-smooth);
+}
+
+.logo span {
+  font-family: var(--font-monospace);
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.logo .sub {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  gap: 2vh;
+  align-items: center;
+}
+
+.nav-item {
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.3s var(--transition-smooth), background-color 0.3s var(--transition-smooth);
+}
+
+.nav-item:hover {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  color: #000000;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transform: scale(1.08);
+}
+
+.nav-work, .nav-about {
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  border: none !important;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  background-color: transparent !important;
+}
+
+.nav-work {
+  margin-bottom: 15px;
+}
+
+.nav-about {
+  margin-top: 15px;
+}
+
+.btn-contact {
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: clamp(10px, 1vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #000;
+  background-color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  white-space: nowrap;
+  transform: rotate(-90deg);
+  margin-bottom: 20px;
+  transition: transform 0.3s var(--transition-smooth), background-color 0.3s var(--transition-smooth);
+}
+
+.btn-contact:hover {
+  background-color: var(--shoot-theme);
+  transform: rotate(-90deg) scale(1.05);
+}
+
+/* ==========================================================================
+   HERO INTRO SECTION
+   ========================================================================== */
+
+.scroll-wrapper {
+  position: relative;
+  width: 100%;
+  padding-left: 100px;
+  z-index: 5;
+}
+
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background-color: #0A0A0A;
+  transition: background-color 1s var(--transition-slow);
+  align-items: center;
+  justify-content: center;
+  padding: 10vh 4vw 6vh;
+  overflow: visible;
+}
+
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  gap: clamp(28px, 4vh, 44px);
+  position: relative;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   HERO — SHOOT GRID
+   ========================================================================== */
+
+.hero-gallery {
+  width: min(1080px, 94vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-thumb-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(18px, 2.4vw, 28px);
+  position: relative;
+  overflow: visible;
+}
+
+.hero-thumb {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  position: relative;
+  z-index: 1;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.hero-thumb-card {
+  width: 100%;
+  height: clamp(175px, 20vw, 248px);
+  border-color: var(--clr-border);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(10, 10, 10, 0.08);
+  transition:
+    box-shadow 0.5s var(--transition-smooth),
+    border-color 0.4s var(--transition-smooth),
+    filter 0.45s var(--transition-smooth);
+}
+
+.hero-thumb-card .card-inner {
+  height: 100%;
+}
+
+.hero-thumb-card .hero-image-slot {
+  flex: 1;
+  min-height: 100%;
+  border-radius: 0;
+}
+
+.hero-thumb-grid.is-hovering .hero-thumb:not(.is-active) .hero-thumb-card {
+  filter: blur(2px);
+  opacity: 0.72;
+}
+
+.hero-thumb.is-active {
+  z-index: 5;
+}
+
+.hero-thumb.is-active .hero-thumb-card {
+  box-shadow: 0 28px 64px rgba(10, 10, 10, 0.15);
+  border-color: rgba(10, 10, 10, 0.12);
+}
+
+.hero-image-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero-image-slot .card-tag {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-scroll-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--shoot-text-muted-dynamic);
+  width: 100%;
+}
+
+.hero-scroll-indicator .arrow-down {
+  font-size: 16px;
+  animation: bounce 2s infinite var(--transition-smooth);
+}
+
+.hero-scroll-indicator .scroll-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+}
+
+@media (max-width: 720px) {
+  .hero-gallery {
+    width: min(640px, 96vw);
+  }
+
+  .hero-thumb-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(12px, 2.8vw, 16px);
+  }
+
+  .hero-thumb-card {
+    height: clamp(96px, 22vw, 128px);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-section {
+    padding: 12vh 3vw 8vh;
+  }
+
+  .hero-gallery {
+    width: 100%;
+  }
+
+  .hero-thumb-grid {
+    gap: 10px;
+  }
+
+  .hero-thumb-card {
+    height: clamp(82px, 24vw, 108px);
+    border-radius: 12px;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ==========================================================================
+   SHOOT STICKY SECTIONS (HORIZONTAL FLOW)
+   ========================================================================== */
+
+.shoot-section {
+  position: relative;
+  width: 100%;
+  background-color: var(--shoot-bg);
+  transition: background-color 1s var(--transition-slow);
+  will-change: background-color;
+}
+
+.shoot-sticky-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.shoot-panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  visibility: visible;
+}
+
+.shoot-section .shoot-description {
+  color: var(--section-text-secondary, var(--shoot-text-secondary-dynamic));
+}
+
+.shoot-section .shoot-title {
+  color: var(--section-text-primary, var(--shoot-text-primary-dynamic));
+}
+
+.shoot-section .credit-row span:first-child {
+  color: var(--section-text-muted, var(--shoot-text-muted-dynamic));
+}
+
+.shoot-section .credit-row span:last-child {
+  color: var(--section-text-primary, var(--shoot-text-primary-dynamic));
+}
+
+.shoot-section .shoot-intro-card {
+  border-color: var(--section-border, var(--shoot-border-dynamic));
+  background-color: var(--section-card-bg, var(--shoot-card-intro-bg));
+}
+
+.shoot-section .card {
+  border-color: var(--section-border, var(--shoot-border-dynamic));
+}
+
+.shoot-section .card .card-inner {
+  display: block;
+  height: 100%;
+}
+
+.shoot-section .card .css-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: block;
+}
+
+.shoot-section .card .css-photo-placeholder img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.shoot-section .card .text-pattern {
+  display: none;
+}
+
+.shoot-section .card .card-num {
+  position: absolute;
+  bottom: 18px;
+  right: 20px;
+  left: auto;
+  font-family: var(--font-monospace);
+  font-size: clamp(10px, 0.95vw, 12px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #0A0A0A;
+  z-index: 6;
+  opacity: 0.9;
+  text-align: right;
+  padding: 0;
+  text-shadow: none;
+  pointer-events: none;
+  transform: none;
+}
+
+.shoot-section .card:hover .card-num {
+  opacity: 1;
+}
+
+.shoot-track {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5vw;
+  padding: 0 4vw;
+  align-items: center;
+  height: 100%;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Title / Metadata — inline with gallery cards */
+.shoot-intro-card {
+  flex-shrink: 0;
+  width: clamp(280px, 24vw, 420px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: clamp(400px, 58vh, 680px);
+  padding: 2vw;
+  border: 1px solid var(--shoot-border-dynamic);
+  border-radius: 12px;
+  background-color: var(--section-card-bg, var(--shoot-card-intro-bg, rgba(255, 255, 255, 0.03)));
+  align-self: center;
+}
+
+.shoot-num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 18px);
+  letter-spacing: normal;
+  color: var(--shoot-theme);
+  margin-bottom: 2vh;
+  display: block;
+  transition: color 0.5s var(--transition-smooth);
+}
+
+.shoot-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 3.8vw, 64px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin-bottom: 3vh;
+  text-transform: uppercase;
+}
+
+.shoot-description {
+  font-size: clamp(12px, 1.1vw, 15px);
+  font-weight: 400;
+  margin-bottom: 4vh;
+}
+
+.shoot-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+
+.credit-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(13px, 1.2vw, 16px);
+  letter-spacing: normal;
+  border-bottom: 1px dashed var(--shoot-border-dynamic); /* Use dynamic border */
+  padding-bottom: 6px;
+}
+
+.credit-row span:first-child {
+  color: var(--shoot-text-muted-dynamic); /* Use dynamic text muted color */
+  font-weight: 400;
+}
+
+.credit-row span:last-child {
+  color: var(--shoot-text-primary-dynamic); /* Use dynamic text primary color */
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* ==========================================================================
+   PHOTO CARD LAYOUTS & INTERACTIVE TILT
+   ========================================================================== */
+
+.card {
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--shoot-border-dynamic);
+  background-color: #FFFFFF !important;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  will-change: transform;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
+  cursor: none;
+}
+
+.card.is-expanded-source {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.card-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s var(--transition-smooth);
+}
+
+body.card-expanded-active .card-modal-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--shoot-bg, #0A0A0A);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: opacity;
+}
+
+body.is-page-transitioning {
+  cursor: wait;
+}
+
+body.is-page-transitioning .page-transition-overlay {
+  pointer-events: auto;
+}
+
+.card-expanded-clone {
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  transform-style: flat;
+}
+
+.card-expanded-clone .card-num {
+  display: none !important;
+}
+
+.card-expanded-clone .css-photo-placeholder,
+.card-expanded-clone .card-inner {
+  height: 100%;
+}
+
+.card-expanded-clone .css-photo-placeholder img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none !important;
+}
+
+.card:hover {
+  border-color: rgba(10, 10, 10, 0.15);
+  box-shadow: 0 35px 80px rgba(10, 10, 10, 0.08);
+}
+
+/* Vertical and Horizontal frame ratios */
+.card.vertical {
+  width: clamp(260px, 22vw, 420px);
+  height: clamp(400px, 58vh, 680px);
+}
+
+.card.horizontal {
+  width: clamp(380px, 34vw, 620px);
+  height: clamp(300px, 46vh, 520px);
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--transition-smooth);
+  will-change: transform;
+}
+
+.card:hover .card-inner img {
+  transform: scale(1.06);
+}
+
+/* Stylistic Placeholder for cards where user would insert images */
+.css-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mesh-art {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  transition: transform 1.2s var(--transition-smooth);
+}
+
+.card:hover .mesh-art {
+  transform: scale(1.1) rotate(2deg);
+}
+
+.card-tag {
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2.5vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--clr-text-muted);
+  opacity: 0.2;
+  text-align: center;
+  padding: 0 20px;
+  z-index: 5;
+  transform: translateZ(10px);
+  transition: opacity 0.5s var(--transition-smooth);
+}
+
+.card:hover .card-tag {
+  opacity: 0.45;
+}
+
+.text-pattern {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--clr-text-muted);
+}
+
+/* Elegant glass caption overlays */
+.card-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 24px; /* Keep padding consistent */
+  background: linear-gradient(to top, var(--shoot-card-caption-gradient-start) 0%, var(--shoot-card-caption-gradient-mid) 45%, transparent 100%); /* Use dynamic gradient */
+  border-top: 1px solid var(--shoot-card-caption-border); /* Use dynamic border */
+  transform: translateZ(25px); /* Lift label in 3D */
+  z-index: 10;
+}
+
+.card-caption span:first-child {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(13px, 1.2vw, 16px); /* Keep font size consistent */
+  color: var(--shoot-text-primary-dynamic); /* Use dynamic text primary color */
+}
+
+.card-caption span:last-child {
+  font-family: var(--font-monospace);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  color: var(--shoot-text-muted-dynamic); /* Use dynamic text muted color */
+  transition: color 0.5s var(--transition-smooth);
+}
+
+/* ==========================================================================
+   CONTACT & COLLABORATION FOOTER
+   ========================================================================== */
+
+.contact-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-section) 8vw 4vh 8vw;
+  background-color: #0A0A0A; /* Heavy Obsidian Black closeout */
+  color: #FFFFFF;
+  z-index: 10;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contact-section .btn-magnetic {
+  color: #0A0A0A !important;
+}
+
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  gap: 6vw;
+  margin-top: 4vh;
+}
+
+.section-tag {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 18px);
+  letter-spacing: normal;
+  color: var(--clr-marshmallow);
+  margin-bottom: 2.5vh;
+  display: block;
+}
+
+.contact-heading {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5.5vw, 84px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  margin-bottom: 4vh;
+}
+
+.contact-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 18px);
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 600px;
+  line-height: 1.6;
+  margin: 0 auto;
+}
+
+/* Owner Details Styled in Courier */
+.owner-details {
+  margin-top: 6vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5vh;
+  font-family: var(--font-monospace);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 4vh;
+}
+
+.owner-detail-item {
+  display: flex;
+  gap: 12px;
+}
+
+.detail-label {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: bold;
+}
+
+.detail-value {
+  color: var(--clr-marshmallow);
+  text-decoration: none;
+  transition: color 0.3s var(--transition-smooth);
+}
+
+.detail-value:hover {
+  color: #FFFFFF;
+}
+
+/* Footer Section */
+.footer {
+  margin-top: 8vh;
+  width: 100%;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 4vh;
+}
+
+.copyright {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: rgb(255, 255, 255);
+}
+
+.footer-links {
+  display: flex;
+  gap: 3vw;
+}
+
+.footer-links a {
+  text-decoration: none;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: rgb(255, 255, 255);
+  transition: color 0.3s var(--transition-smooth);
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  /* Let custom cursor default back to browser on touchscreen */
+  .custom-cursor-dot, .custom-cursor-ring {
+    display: none;
+  }
+  
+  .header {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    padding: 1.5vh 4vw;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .logo { align-items: flex-start; }
+  .logo span { font-size: clamp(14px, 1.4vw, 18px); }
+  .nav-list { flex-direction: row; gap: 1vw; }
+  .nav-work, .nav-about { margin: 0; }
+  .btn-contact { transform: none; margin-bottom: 0; }
+  .btn-contact:hover { transform: scale(1.05); }
+  .scroll-wrapper { padding-left: 0; }
+  
+  .shoot-track {
+    gap: 6vw;
+  }
+  
+  .shoot-intro-card {
+    width: clamp(260px, 40vw, 380px);
+    height: clamp(340px, 50vh, 560px);
+  }
+  
+  .card.vertical {
+    width: 32vw;
+    height: 50vh;
+  }
+  
+  .card.horizontal {
+    width: 45vw;
+    height: 40vh;
+  }
+  
+  .contact-container {
+    grid-template-columns: 1fr;
+    gap: 8vh;
+  }
+  
+  .contact-form {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header .nav {
+    display: none; /* Hide desktop numbers on mobile for simplicity */
+  }
+  
+  .shoot-section {
+    color: var(--shoot-text-primary-dynamic); /* Ensure text color is dynamic on mobile too */
+    height: auto !important; /* Disable smooth pin on tiny screens, fall back to fluid swipe or standard vertical */
+  }
+  
+  .shoot-sticky-wrapper {
+    position: relative !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  .shoot-panel {
+    height: auto !important;
+    overflow-x: scroll;
+    scrollbar-width: none; /* Firefox hide scroll */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .shoot-panel::-webkit-scrollbar {
+    display: none; /* Safari hide scroll */
+  }
+  
+  .shoot-track {
+    flex-wrap: nowrap;
+    padding: 8vh 6vw;
+    gap: 30px;
+    height: auto;
+  }
+  
+  .shoot-intro-card {
+    width: 80vw !important;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--clr-border);
+    padding-right: 0;
+    padding-bottom: 4vh;
+    margin-bottom: 2vh;
+  }
+  
+  .card.vertical {
+    width: 70vw !important;
+    height: 50vh !important;
+  }
+  
+  .card.horizontal {
+    width: 80vw !important;
+    height: 38vh !important;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   GLOBAL SOLID WHITE PHOTO PLACEHOLDERS
+   ========================================================================== */
+
+.css-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF !important; /* Strictly white backgrounds */
+  background: #FFFFFF !important; /* Override all inline gradients */
+}
+
+/* Remove decorative placeholder shapes/text to yield absolute clean white spaces */
+.mesh-art, .text-pattern {
+  display: none !important;
+}
+
+/* Make card tags look extremely clean and low key */
+.card-tag {
+  font-family: var(--font-monospace) !important;
+  font-size: 10px !important;
+  font-weight: normal !important;
+  letter-spacing: 0.05em !important;
+  color: rgba(10, 10, 10, 0.3) !important;
+  opacity: 1 !important;
+  transform: translateZ(5px);
+}
+
+.card:hover .card-tag {
+  color: rgba(10, 10, 10, 0.6) !important;
+}
+
+@media (max-width: 1024px) {
+  .cv-grid {
+    grid-template-columns: 1fr;
+    gap: 6vh;
+  }
+}
