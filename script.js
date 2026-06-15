@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  const navItems = document.querySelectorAll('.nav-item');
+  const shootSections = document.querySelectorAll('.shoot-section');
+  const shootTargetsCache = new WeakMap();
+  const prefersFinePointer = window.matchMedia('(pointer: fine)').matches;
+
   /* ==========================================================================
      0. HEADER ENTRANCE ANIMATION
      ========================================================================== */
@@ -31,16 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   lenis.on('scroll', ScrollTrigger.update);
 
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
-
-  gsap.ticker.lagSmoothing(0);
-  window.lenisInstance = lenis;
-
-  /* ==========================================================================
-     2. CUSTOM CURSOR — small transparent circle
-     ========================================================================== */
   const cursorRing = document.getElementById('cursor-ring');
   const ambientGlow = document.getElementById('ambient-glow');
 
@@ -49,32 +44,34 @@ document.addEventListener('DOMContentLoaded', () => {
   let ringX = mouseX;
   let ringY = mouseY;
 
+  const glowToX = ambientGlow
+    ? gsap.quickTo(ambientGlow, 'x', { duration: 1.2, ease: 'power3.out' })
+    : null;
+  const glowToY = ambientGlow
+    ? gsap.quickTo(ambientGlow, 'y', { duration: 1.2, ease: 'power3.out' })
+    : null;
+
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+    if (prefersFinePointer && glowToX && glowToY) {
+      glowToX(mouseX);
+      glowToY(mouseY);
+    }
+  }, { passive: true });
 
-    gsap.to(ambientGlow, {
-      x: mouseX,
-      y: mouseY,
-      duration: 1.2,
-      ease: 'power3.out'
-    });
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+
+    if (prefersFinePointer && cursorRing) {
+      ringX += (mouseX - ringX) * 0.28;
+      ringY += (mouseY - ringY) * 0.28;
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+    }
   });
 
-  function animateCursor() {
-    if (!cursorRing) return;
-    const lerpFactor = 0.28;
-    ringX += (mouseX - ringX) * lerpFactor;
-    ringY += (mouseY - ringY) * lerpFactor;
-    gsap.set(cursorRing, {
-      x: ringX,
-      y: ringY,
-      xPercent: -50,
-      yPercent: -50
-    });
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
+  gsap.ticker.lagSmoothing(0);
+  window.lenisInstance = lenis;
 
   document.addEventListener('mouseleave', () => {
     gsap.to(cursorRing, { opacity: 0, duration: 0.3 });
@@ -193,13 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      3. MAGNETIC ELEMENTS
      ========================================================================== */
-  document.querySelectorAll('.text-magnetic, .btn-magnetic').forEach(el => {
+  document.querySelectorAll('.text-magnetic, .btn-magnetic').forEach((el) => {
+    const magToX = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power3.out' });
+    const magToY = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power3.out' });
+
     el.addEventListener('mousemove', (e) => {
       const rect = el.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      gsap.to(el, { x: x * 0.35, y: y * 0.35, duration: 0.4, ease: 'power3.out' });
-    });
+      magToX(x * 0.35);
+      magToY(y * 0.35);
+    }, { passive: true });
 
     el.addEventListener('mouseleave', () => {
       gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
@@ -209,8 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      4. 3D CARD TILT ON CURSOR
      ========================================================================== */
-  document.querySelectorAll('.card-tilt').forEach(card => {
+  document.querySelectorAll('.card-tilt').forEach((card) => {
     const inner = card.querySelector('.card-inner') || card;
+    const tiltToX = gsap.quickTo(card, 'rotateX', { duration: 0.4, ease: 'power2.out' });
+    const tiltToY = gsap.quickTo(card, 'rotateY', { duration: 0.4, ease: 'power2.out' });
+    const tiltToScale = gsap.quickTo(card, 'scale', { duration: 0.4, ease: 'power2.out' });
+    const innerToZ = gsap.quickTo(inner, 'z', { duration: 0.4, ease: 'power2.out' });
 
     card.addEventListener('mousemove', (e) => {
       if (document.body.classList.contains('card-expanded-active')) return;
@@ -225,21 +230,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const angleX = ((yc - y) / yc) * 12 * speed;
       const angleY = ((x - xc) / xc) * -12 * speed;
 
-      gsap.to(card, {
-        rotateX: angleX,
-        rotateY: angleY,
-        scale: 1.04,
-        duration: 0.4,
-        ease: 'power2.out',
-        transformPerspective: 1200
-      });
-
-      gsap.to(inner, {
-        z: 30,
-        duration: 0.4,
-        ease: 'power2.out'
-      });
-    });
+      gsap.set(card, { transformPerspective: 1200 });
+      tiltToX(angleX);
+      tiltToY(angleY);
+      tiltToScale(1.04);
+      innerToZ(30);
+    }, { passive: true });
 
     card.addEventListener('mouseleave', () => {
       gsap.to(card, {
@@ -395,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.setProperty('--shoot-card-intro-bg', isPinkBg ? '#FDCBDD' : (isDarkBg ? 'rgba(255, 255, 255, 0.03)' : 'rgba(10, 10, 10, 0.03)'));
   }
 
-  document.querySelectorAll('.shoot-section').forEach(applySectionColors);
+  shootSections.forEach(applySectionColors);
 
   let navScrollLock = null;
   let isPageTransitioning = false;
@@ -413,11 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function setActiveNav(shootNum, force = false) {
     if (!force && navScrollLock !== null && navScrollLock !== shootNum) return;
 
-    document.querySelectorAll('.nav-item').forEach(item => {
+    navItems.forEach(item => {
       const isShootMatch = item.getAttribute('data-shoot') === shootNum;
-      item.classList.toggle('active', isShootMatch);
+      const isWork = item.classList.contains('nav-work');
+      item.classList.toggle('active', isShootMatch || isWork);
     });
-    document.querySelectorAll('.shoot-section').forEach(section => {
+    shootSections.forEach(section => {
       section.classList.toggle('is-active-shoot', section.id === `shoot-${shootNum}`);
     });
   }
@@ -478,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (targetId === '#contact') {
       instantScrollTo(targetElement);
-      document.querySelectorAll('.nav-item').forEach(item => {
+      navItems.forEach(item => {
         item.classList.toggle('active', item.classList.contains('nav-about'));
       });
       syncTransitionOverlayColor();
@@ -537,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!force && navScrollLock !== null) return;
 
     document.body.classList.add('is-hero-view');
-    document.querySelectorAll('.nav-item').forEach(item => {
+    navItems.forEach(item => {
       item.classList.toggle('active', item.classList.contains('nav-work'));
     });
     document.querySelectorAll('.shoot-section').forEach(s => s.classList.remove('is-active-shoot'));
@@ -553,9 +550,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getShootTargets(section) {
-    const intro = section.querySelector('.shoot-intro-card');
-    const cards = section.querySelectorAll('.card');
-    return intro ? [intro, ...cards] : [...cards];
+    if (!shootTargetsCache.has(section)) {
+      const intro = section.querySelector('.shoot-intro-card');
+      const cards = section.querySelectorAll('.card');
+      shootTargetsCache.set(section, intro ? [intro, ...cards] : [...cards]);
+    }
+    return shootTargetsCache.get(section);
   }
 
   function setShootContentState(section, opacity, y = 0) {
@@ -569,11 +569,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const mm = gsap.matchMedia();
 
   mm.add('(min-width: 769px)', () => {
-    const shootSections = document.querySelectorAll('.shoot-section');
-
     shootSections.forEach((section) => {
       const track = section.querySelector('.shoot-track');
       const stickyWrapper = section.querySelector('.shoot-sticky-wrapper');
+      const panel = section.querySelector('.shoot-panel');
       if (!track || !stickyWrapper) return;
 
       const shootNum = section.id.split('-')[1];
@@ -587,7 +586,8 @@ document.addEventListener('DOMContentLoaded', () => {
       setShootContentState(section, 0, 45);
 
       const getScrollDistance = () => {
-        return Math.max(track.scrollWidth - window.innerWidth, 0);
+        const containerWidth = panel?.clientWidth || window.innerWidth;
+        return Math.max(track.scrollWidth - containerWidth, 0);
       };
 
       ScrollTrigger.create({
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trigger: '#contact',
     start: 'top center',
     onEnter: () => {
-      document.querySelectorAll('.nav-item').forEach(item => {
+      navItems.forEach(item => {
         item.classList.toggle('active', item.classList.contains('nav-about'));
       });
     },

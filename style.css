@@ -108,7 +108,6 @@ body.is-hero-view {
   pointer-events: none;
   z-index: 1;
   transform: translate(-50%, -50%);
-  will-change: transform, background;
   mix-blend-mode: multiply;
   filter: blur(80px);
   transition: background 0.8s var(--transition-smooth);
@@ -154,7 +153,6 @@ body.is-hero-view {
   opacity: 1;
   transition: width 0.3s var(--transition-smooth), height 0.3s var(--transition-smooth),
               background-color 0.3s var(--transition-smooth), border-color 0.3s var(--transition-smooth);
-  will-change: transform;
 }
 
 .cursor-text {
@@ -280,6 +278,13 @@ body.hovering-button .custom-cursor-ring {
   background-color: transparent !important;
 }
 
+.nav-work.active,
+.nav-about.active {
+  color: #FFFFFF;
+  border: none;
+  transform: scale(1.08);
+}
+
 .nav-work {
   margin-bottom: 15px;
 }
@@ -372,7 +377,6 @@ body.hovering-button .custom-cursor-ring {
   outline: none;
   position: relative;
   z-index: 1;
-  will-change: transform;
   transform-origin: center center;
 }
 
@@ -421,9 +425,32 @@ body.hovering-button .custom-cursor-ring {
   z-index: 1;
 }
 
-.hero-image-slot .card-tag {
-  position: relative;
-  z-index: 2;
+.hero-thumb-grid .hero-thumb[data-shoot="03"] .hero-image-slot {
+  overflow: hidden;
+}
+
+.hero-thumb-grid .hero-thumb[data-shoot="03"] .hero-image-slot img {
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 135%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.hero-thumb-grid .hero-thumb[data-shoot="07"] .hero-image-slot {
+  overflow: hidden;
+}
+
+.hero-thumb-grid .hero-thumb[data-shoot="07"] .hero-image-slot img {
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 135%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.hero-thumb-grid .card-tag {
+  display: none;
 }
 
 .hero-scroll-indicator {
@@ -495,7 +522,6 @@ body.hovering-button .custom-cursor-ring {
   width: 100%;
   background-color: var(--shoot-bg);
   transition: background-color 1s var(--transition-slow);
-  will-change: background-color;
 }
 
 .shoot-sticky-wrapper {
@@ -592,11 +618,10 @@ body.hovering-button .custom-cursor-ring {
   display: flex;
   flex-wrap: nowrap;
   gap: 1.5vw;
-  padding: 0 4vw;
+  padding: 0 6vw 0 4vw;
   align-items: center;
   height: 100%;
   width: max-content;
-  will-change: transform;
 }
 
 /* Title / Metadata — inline with gallery cards */
@@ -633,6 +658,12 @@ body.hovering-button .custom-cursor-ring {
   letter-spacing: -0.01em;
   margin-bottom: 3vh;
   text-transform: uppercase;
+}
+
+#shoot-07 .shoot-title {
+  font-size: clamp(24px, 2.6vw, 44px);
+  line-height: 1;
+  max-width: 100%;
 }
 
 .shoot-description {
@@ -682,7 +713,6 @@ body.hovering-button .custom-cursor-ring {
   background-color: #FFFFFF !important;
   transform-style: preserve-3d;
   perspective: 1200px;
-  will-change: transform;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
   transition: border-color 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
   cursor: none;
@@ -720,7 +750,6 @@ body.card-expanded-active .card-modal-overlay {
   opacity: 0;
   pointer-events: none;
   z-index: 9998;
-  will-change: opacity;
 }
 
 body.is-page-transitioning {
@@ -778,7 +807,6 @@ body.is-page-transitioning .page-transition-overlay {
   flex-direction: column;
   position: relative;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .card-inner img {
@@ -786,7 +814,6 @@ body.is-page-transitioning .page-transition-overlay {
   height: 100%;
   object-fit: cover;
   transition: transform 0.8s var(--transition-smooth);
-  will-change: transform;
 }
 
 .card:hover .card-inner img {
