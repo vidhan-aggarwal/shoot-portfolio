@@ -99,29 +99,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const setupCardExpansion = () => {
     const cards = document.querySelectorAll('.shoot-section .card');
     const overlay = document.getElementById('modal-overlay');
+    const CARD_EXPAND_DURATION = 0.55;
+    const CARD_EXPAND_EASE = 'power3.inOut';
     let expandedCard = null;
     let expandedClone = null;
+    let expandOrigin = null;
 
-    const closeExpandedCard = () => {
-      if (!expandedCard) return;
-
+    const resetExpandedState = () => {
       if (expandedClone) {
-        gsap.to(expandedClone, {
-          opacity: 0,
-          scale: 0.92,
-          duration: 0.35,
-          ease: 'power3.in',
-          onComplete: () => {
-            expandedClone.remove();
-            expandedClone = null;
-          }
-        });
+        gsap.killTweensOf(expandedClone);
+        expandedClone.remove();
+        expandedClone = null;
       }
-
-      expandedCard.classList.remove('is-expanded-source');
-      expandedCard = null;
+      if (expandedCard) {
+        expandedCard.classList.remove('is-expanded-source');
+        expandedCard = null;
+      }
+      expandOrigin = null;
       document.body.classList.remove('card-expanded-active');
       lenis.start();
+    };
+
+    const closeExpandedCard = () => {
+      if (!expandedCard || !expandedClone) return;
+
+      gsap.killTweensOf(expandedClone);
+      expandedClone.classList.remove('is-settled');
+      expandedClone.classList.add('is-morphing');
+
+      const origin = expandOrigin || expandedCard.getBoundingClientRect();
+
+      gsap.to(expandedClone, {
+        top: origin.top,
+        left: origin.left,
+        x: 0,
+        y: 0,
+        width: origin.width,
+        height: origin.height,
+        borderRadius: 12,
+        duration: CARD_EXPAND_DURATION,
+        ease: CARD_EXPAND_EASE,
+        onComplete: resetExpandedState
+      });
     };
 
     cards.forEach(card => {
@@ -133,15 +152,69 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        if (expandedCard) closeExpandedCard();
+        if (expandedCard) {
+          resetExpandedState();
+        }
 
         expandedCard = card;
         card.classList.add('is-expanded-source');
 
         const rect = card.getBoundingClientRect();
+        expandOrigin = {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height
+        };
         expandedClone = card.cloneNode(true);
         expandedClone.classList.add('card-expanded-clone');
         expandedClone.classList.remove('card-tilt');
+        const shootSection = card.closest('.shoot-section');
+        const img = card.querySelector('img');
+        const imgSrc = img?.getAttribute('src') || '';
+
+        if (imgSrc.includes('shoot3/12.jpg')) {
+          expandedClone.classList.add('card-light-surface');
+        } else if (shootSection?.style.getPropertyValue('--shoot-bg').trim() === '#FFFFFF') {
+          expandedClone.classList.add('card-dark-surface');
+        }
+
+        const getExpandedSize = () => {
+          const maxW = Math.min(window.innerWidth * 0.72, 900);
+          const maxH = Math.min(window.innerHeight * 0.72, 680);
+          const naturalW = img?.naturalWidth;
+          const naturalH = img?.naturalHeight;
+
+          if (naturalW && naturalH) {
+            const aspect = naturalW / naturalH;
+            if (aspect >= maxW / maxH) {
+              return { width: maxW, height: maxW / aspect };
+            }
+            return { width: maxH * aspect, height: maxH };
+          }
+
+          if (card.classList.contains('square')) {
+            const size = Math.min(maxW, maxH);
+            return { width: size, height: size };
+          }
+
+          if (card.classList.contains('horizontal')) {
+            return { width: maxW, height: Math.min(maxH, maxW * 0.72) };
+          }
+
+          return { width: Math.min(maxW, maxH * 0.62), height: maxH };
+        };
+
+        const expandedSize = getExpandedSize();
+        const cardAspect = rect.width / rect.height;
+        const targetAspect = expandedSize.width / expandedSize.height;
+        const aspectsMatch = Math.abs(cardAspect - targetAspect) < 0.05;
+
+        expandedClone.querySelectorAll('.card-inner, .css-photo-placeholder, img').forEach((el) => {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+
         expandedClone.querySelectorAll('.card-num').forEach((el) => {
           el.style.display = 'none';
         });
@@ -152,10 +225,15 @@ document.addEventListener('DOMContentLoaded', () => {
           width: ${rect.width}px;
           height: ${rect.height}px;
           margin: 0;
+          opacity: 1;
           z-index: 10001;
           pointer-events: none;
         `;
         document.body.appendChild(expandedClone);
+
+        if (!aspectsMatch) {
+          expandedClone.classList.add('is-morphing');
+        }
 
         document.body.classList.add('card-expanded-active');
         lenis.stop();
@@ -165,12 +243,14 @@ document.addEventListener('DOMContentLoaded', () => {
           left: '50%',
           x: '-50%',
           y: '-50%',
-          width: Math.min(window.innerWidth * 0.72, 900),
-          height: Math.min(window.innerHeight * 0.72, 680),
+          width: expandedSize.width,
+          height: expandedSize.height,
           borderRadius: 16,
-          duration: 0.55,
-          ease: 'power3.out',
+          duration: CARD_EXPAND_DURATION,
+          ease: CARD_EXPAND_EASE,
           onComplete: () => {
+            expandedClone.classList.remove('is-morphing');
+            expandedClone.classList.add('is-settled');
             expandedClone.style.pointerEvents = 'auto';
           }
         });
